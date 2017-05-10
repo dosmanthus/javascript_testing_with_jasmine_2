@@ -1,4 +1,4 @@
-/*global define*/
+/*globals define*/
 define(function(){
   'use strict';
   var self = {};
