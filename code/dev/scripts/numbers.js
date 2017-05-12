@@ -1,5 +1,5 @@
-/*globals define*/
-define(function(){
+/*global define*/
+define(['events'], function(events){
   'use strict';
   var self = {};
 
@@ -13,8 +13,13 @@ define(function(){
       total += element;
     });
 
+    events.publish('added', {
+      operands: operands,
+      result: total
+    });
+
     return total;
-  }
+  };
 
   return self;
 });

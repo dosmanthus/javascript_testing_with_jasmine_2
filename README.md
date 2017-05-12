@@ -4,6 +4,6 @@
 
 - [x] [1.Introduction](https://github.com/dosmanthus/javascript_testing_with_jasmine_2/tree/introduction)
 - [x] [2.Jasmine Basics](https://github.com/dosmanthus/javascript_testing_with_jasmine_2/tree/basics)
-- [ ] 3.Mocking
+- [x] [3.Mocking](https://github.com/dosmanthus/javascript_testing_with_jasmine_2/tree/mocking)
 - [ ] 4.Advanced Testing With Jasmine
 - [ ] 5.Conclusion
