@@ -16,13 +16,14 @@ define(['numbers', 'events', 'lib/matchers'], function(numbers, events, matchers
         jasmine.addMatchers(matchers);
       });
 
-      // it('accepts one or more numberical arguments and return the sum of them', function(){
-      //   // act
-      //   output = numbers.add(this.numberInput1, this.numberInput2);
-      //   // assert
-      //   expect(output).toEqual(3);
-      //   expect(output).not.toEqual(4);
-      // });
+
+      it('accepts one or more numberical arguments and return the sum of them', function(){
+        // act
+        output = numbers.add(this.numberInput1, this.numberInput2);
+        // assert
+        expect(output).toEqual(3);
+        expect(output).not.toEqual(4);
+      });
 
       // it('should try to parse an integer when a string is passed to the method', function() {
       //   output = numbers.add(this.numberInput1, this.stringInput1);
@@ -34,40 +35,51 @@ define(['numbers', 'events', 'lib/matchers'], function(numbers, events, matchers
       //   expect(output).toEqual(1);
       // });
 
-      it('should publish an added event showing the operands passed to the method and the result', function() {
-        var x, length, calls;
-        spyOn(events, 'publish');
-        // spyOn(events, 'publish').and.callThrough();
-        // spyOn(events, 'publish').and.returnValue(false);
-        // spyOn(events, 'publish').and.callFake(function(name, args) {
-        //   window.alert(name);
-        // });
-        // spyOn(events, 'publish').and.throwError('oops');
-        // spyOn(events, 'publish').and.stub();
-        // expect(function(){
-        //   numbers.add(1,1);
-        // }).toThrowError('oops');
-        expect(events.publish.calls.any()).toBe(false);
+      it('should publish an added event showing the operands passed to the method, the result and the fact', function(done) {
+        // var x, length, calls;
+        // spyOn(events, 'publish');
+        // // spyOn(events, 'publish').and.callThrough();
+        // // spyOn(events, 'publish').and.returnValue(false);
+        // // spyOn(events, 'publish').and.callFake(function(name, args) {
+        // //   window.alert(name);
+        // // });
+        // // spyOn(events, 'publish').and.throwError('oops');
+        // // spyOn(events, 'publish').and.stub();
+        // // expect(function(){
+        // //   numbers.add(1,1);
+        // // }).toThrowError('oops');
+        // expect(events.publish.calls.any()).toBe(false);
 
-        numbers.add(this.numberInput1, this.numberInput2);
-        // expect(events.publish).toHaveBeenCalled();
-        // expect(events.publish).toHaveBeenCalledWith('added', { operands: [this.numberInput1, this.numberInput2], result: 3 });
+        // numbers.add(this.numberInput1, this.numberInput2);
+        // // expect(events.publish).toHaveBeenCalled();
+        // // expect(events.publish).toHaveBeenCalledWith('added', { operands: [this.numberInput1, this.numberInput2], result: 3 });
 
-        // expect(events.publish.calls.any()).toBe(true);
-        expect(events.publish.calls.count()).toEqual(1);
+        // // expect(events.publish.calls.any()).toBe(true);
+        // expect(events.publish.calls.count()).toEqual(1);
 
-        numbers.add(this.numberInput1, this.stringInput1);
-        // events.publish.calls.reset();
-        expect(events.publish.calls.count()).toEqual(2);
-        // expect(events.publish.calls.argsFor(1)).toEqual(['added', { operands: [this.numberInput1, this.stringInput1], result: 2 }]);
-        // expect(events.publish.calls.argsFor(1)).toEqual([jasmine.any(String), jasmine.any(Object)]);
-        expect(events.publish.calls.mostRecent().args).toEqual([jasmine.any(String), jasmine.any(Object)]);
-        expect(events.publish.calls.allArgs()).toEqual([[jasmine.any(String), jasmine.any(Object)], [jasmine.any(String), jasmine.any(Object)]]);
+        // numbers.add(this.numberInput1, this.stringInput1);
+        // // events.publish.calls.reset();
+        // expect(events.publish.calls.count()).toEqual(2);
+        // // expect(events.publish.calls.argsFor(1)).toEqual(['added', { operands: [this.numberInput1, this.stringInput1], result: 2 }]);
+        // // expect(events.publish.calls.argsFor(1)).toEqual([jasmine.any(String), jasmine.any(Object)]);
+        // expect(events.publish.calls.mostRecent().args).toEqual([jasmine.any(String), jasmine.any(Object)]);
+        // expect(events.publish.calls.allArgs()).toEqual([[jasmine.any(String), jasmine.any(Object)], [jasmine.any(String), jasmine.any(Object)]]);
 
-        calls = events.publish.calls.all();
-        for (x = 0, length = calls.length; x < length; x++) {
-          expect(calls[x].object.id).toEqual('events');
-        }
+        // calls = events.publish.calls.all();
+        // for (x = 0, length = calls.length; x < length; x++) {
+        //   expect(calls[x].object.id).toEqual('events');
+        // }
+
+        var that = this;
+
+        events.subscribe('added', function(data) {
+          console.log(data.triviaFact);
+          expect(data.operands).toEqual([that.numberInput1, that.numberInput2]);
+          expect(data.result).toEqual(3);
+          expect(data.triviaFact).toEqual(jasmine.any(String));
+
+          done();
+        });
       });
 
 
@@ -78,9 +90,32 @@ define(['numbers', 'events', 'lib/matchers'], function(numbers, events, matchers
         output = numbers.add(this.numberInput1, this.stringInput1);
         expect(output).not.toBeOdd();
 
-        expect(2).toBeOdd();
+        // expect(2).toBeOdd();
       });
 
+    });
+
+    describe('The addAfterDelay method', function(){
+      var noop = function() {};
+
+      beforeEach(function(){
+        spyOn(numbers, 'add');
+
+        jasmine.clock().install();
+      });
+
+      afterEach(function(){
+        jasmine.clock().uninstall();
+      });
+
+
+      it('should invoke the add method after a specified delay', function() {
+        numbers.addAfterDelay(1000, noop, 1, 2);
+        expect(numbers.add).not.toHaveBeenCalled();
+
+        jasmine.clock().tick(1001);
+        expect(numbers.add).toHaveBeenCalled();
+      });
 
     });
   });

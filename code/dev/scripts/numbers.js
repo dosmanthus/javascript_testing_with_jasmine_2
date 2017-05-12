@@ -1,5 +1,5 @@
 /*global define*/
-define(['events'], function(events){
+define(['events', 'jquery'], function(events, $){
   'use strict';
   var self = {};
 
@@ -13,12 +13,25 @@ define(['events'], function(events){
       total += element;
     });
 
-    events.publish('added', {
-      operands: operands,
-      result: total
+    $.get('http://numbersapi.com/' + total + '/trivia', function(fact){
+      events.publish('added', {
+        operands: operands,
+        result: total,
+        triviaFact: fact
+      });
     });
 
     return total;
+  };
+
+  self.addAfterDelay = function addAfterDelay(delay, callback) {
+    var timeoutDelay = Array.prototype.shift.call(arguments),
+        callback = Array.prototype.shift.call(arguments),
+        operands = arguments;
+
+    window.setTimeout(function(){
+      callback(self.add.apply(this, operands));
+    }, delay);
   };
 
   return self;
